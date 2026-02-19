@@ -118,6 +118,3 @@ curl -X POST http://localhost:3000/tickets \
 
 See [backend/README.md](backend/README.md) for more detail.
 
-## License
-
-MIT (or add your preferred license).
