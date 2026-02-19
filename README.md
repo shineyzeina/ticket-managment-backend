@@ -33,10 +33,9 @@ git clone https://github.com/shineyzeina/ticket-managment-backend.git
 cd ticket-managment-backend
 ```
 
-### 2. Set up the backend
+### 2. Install and set up
 
 ```bash
-cd backend
 cp .env.example .env
 npm install
 npm run db:generate
@@ -45,7 +44,7 @@ npm run db:push
 
 ### 3. Configure environment
 
-Edit `backend/.env`:
+Edit `.env`:
 
 - **DATABASE_URL** — Default `file:./dev.db` (SQLite). For PostgreSQL: `postgresql://user:pass@host:5432/dbname`
 - **OPENAI_API_KEY** — Optional. If set, tickets can be created with only `title` and `description`; AI will suggest category and speciality. Without it, you must send `categoryId` and `specialityId` when creating tickets.
@@ -88,18 +87,17 @@ curl -X POST http://localhost:3000/tickets \
 ## Project structure
 
 ```
-├── README.md                 # This file
+├── README.md
 ├── BACKEND_PLAN.md           # Design and implementation plan
-└── backend/
-    ├── README.md             # Backend-specific docs
-    ├── package.json
-    ├── prisma/
-    │   └── schema.prisma     # Data model
-    └── src/
-        ├── index.ts         # App entry
-        ├── lib/prisma.ts
-        ├── routes/          # REST endpoints
-        └── services/        # Business logic (tickets, AI, assignment)
+├── package.json
+├── .env.example
+├── prisma/
+│   └── schema.prisma         # Data model
+└── src/
+    ├── index.ts              # App entry
+    ├── lib/prisma.ts
+    ├── routes/               # REST endpoints
+    └── services/             # Business logic (tickets, AI, assignment)
 ```
 
 ## API overview
@@ -116,5 +114,5 @@ curl -X POST http://localhost:3000/tickets \
 | GET/POST/PATCH | /team-members | Team members CRUD |
 | GET/PATCH | /assignment/rules | View or set default assignee |
 
-See [backend/README.md](backend/README.md) for more detail.
+Query params for `GET /tickets`: `status`, `categoryId`, `assignedToId`, `fromDate`, `toDate`. For `GET /team-members`: `specialityId`, `isActive`.
 
