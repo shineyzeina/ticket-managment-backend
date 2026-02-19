@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  parentId    String?
+  parent      Category?    @relation("CategoryChildren", fields: [parentId], references: [id])
+  children    Category[]   @relation("CategoryChildren")
+  specialities Speciality[]
+  tickets     Ticket[]
+}
+
+model Speciality {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  members     TeamMemberSpeciality[]
+  tickets     Ticket[]
+}
+
+model TeamMember {
+  id           String                 @id @default(cuid())
+  name         String
+  email        String                @unique
+  isActive     Boolean                @default(true)
+  specialities TeamMemberSpeciality[]
+  assignedTickets Ticket[]            @relation("AssignedTickets")
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+}
+
+model TeamMemberSpeciality {
+  teamMemberId  String
+  specialityId  String
+  teamMember    TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  speciality    Speciality  @relation(fields: [specialityId], references: [id], onDelete: Cascade)
+  @@id([teamMemberId, specialityId])
+}
+
+model Ticket {
+  id                    String    @id @default(cuid())
+  title                 String
+  description           String
+  status                String    @default("New")
+  priority              String    @default("Medium")
+  source                String?   @default("api")
+  categoryId            String?
+  specialityId          String?
+  assignedToId          String?
+  aiSuggestedCategoryId String?
+  aiSuggestedSpecialityId String?
+  aiConfidence          String?
+  metadata              String?   // JSON string
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  category              Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  speciality            Speciality? @relation(fields: [specialityId], references: [id], onDelete: SetNull)
+  assignedTo            TeamMember? @relation("AssignedTickets", fields: [assignedToId], references: [id], onDelete: SetNull)
+}
+
+model AssignmentState {
+  id             String   @id @default(cuid())
+  specialityId   String   @unique
+  lastAssignedId String?
+  updatedAt      DateTime @updatedAt
+}
